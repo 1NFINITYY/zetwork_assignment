@@ -48,6 +48,7 @@ export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
+  getSocketToken: () => api.get('/auth/socket-token'),
 }
 
 // ─── Account API ───────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, logout, me } = require('../controllers/authController');
+const { register, login, logout, me, getSocketToken } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
 const { registerSchema, loginSchema, validate } = require('../validators/authValidators');
@@ -16,5 +16,9 @@ router.post('/logout', logout);
 
 // GET /api/v1/auth/me
 router.get('/me', authenticate, me);
+
+// GET /api/v1/auth/socket-token
+// Returns short-lived token for Socket.IO handshake (Vite WS proxy doesn't forward cookies)
+router.get('/socket-token', authenticate, getSocketToken);
 
 module.exports = router;

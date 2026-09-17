@@ -6,7 +6,7 @@
 
 ## Overview
 
-ZetPay is a full-stack banking application that simulates money transfers between accounts. It demonstrates production-quality engineering: **ACID database transactions**, **concurrency-safe transfers**, **idempotent API design**, **JWT authentication**, and comprehensive **input validation**.
+ZetPay is a full-stack banking application that simulates money transfers between accounts. It demonstrates production-quality engineering: **ACID database transactions**, **concurrency-safe transfers**, **idempotent API design**, **JWT authentication**, **comprehensive input validation**, and **real-time Socket.IO notifications**.
 
 ---
 
@@ -36,6 +36,9 @@ ZetPay is a full-stack banking application that simulates money transfers betwee
 | Full transaction history | ✅ |
 | Paginated transaction list | ✅ |
 | Transfer confirmation modal | ✅ |
+| **Real-time notifications (Socket.IO)** | ✅ |
+| **Live balance update without refresh** | ✅ |
+| **Duplicate event protection (deduplication)** | ✅ |
 | Loading / empty / error UI states | ✅ |
 | JWT in HTTP-only cookies | ✅ |
 | Bcrypt password hashing | ✅ |
@@ -58,9 +61,11 @@ ZetPay is a full-stack banking application that simulates money transfers betwee
 - **Tailwind CSS** — Utility-first styling with dark glassmorphism theme
 - **React Router v6** — Client-side routing with protected routes
 - **Axios** — HTTP client with interceptors and credential support
+- **Socket.IO Client** — Real-time WebSocket communication
 
 ### Backend
 - **Node.js** + **Express.js** — REST API server
+- **Socket.IO** — WebSocket server for real-time event broadcasting
 - **MongoDB** + **Mongoose** — Document database with replica set for transactions
 - **Zod** — Runtime schema validation
 - **bcryptjs** — Password hashing (cost factor 12)
@@ -80,19 +85,19 @@ ZetPay is a full-stack banking application that simulates money transfers betwee
 ```
 React UI (Vite)
      │
-     ▼ HTTP (Axios, withCredentials)
-REST API (Express)
-     │
-     ├── Helmet (security headers)
-     ├── CORS (origin-restricted)
-     ├── Rate Limiting
-     ├── Zod Validation
-     ├── JWT Auth (HTTP-only cookies)
-     │
-     ▼
-Controllers → Services → MongoDB
-                │
-                └── session.withTransaction() ← ACID
+     ├── HTTP (Axios, withCredentials) ──► REST API (Express)
+     │                                          │
+     │                                          ├── Helmet / CORS / Rate Limit / Zod
+     │                                          ├── JWT Auth (HTTP-only cookies)
+     │                                          │
+     │                                          ▼
+     │                               Controllers → Services → MongoDB
+     │                                               │
+     │                                               └── session.withTransaction() ← ACID
+     │                                                            │
+     │                                                          COMMIT
+     │                                                            │
+     └── WebSocket (Socket.IO) ◄───────────────── Emit money_received event
 ```
 
 ### Backend Layers
@@ -164,6 +169,7 @@ http://localhost:5000/api/v1
 | POST | `/auth/login` | Login, get JWT cookie | No |
 | POST | `/auth/logout` | Clear JWT cookie | No |
 | GET | `/auth/me` | Get current user | Yes |
+| GET | `/auth/socket-token` | Get short-lived Socket.IO auth token | Yes |
 
 ### Accounts
 
@@ -297,6 +303,8 @@ Create Transaction record
           ↓
 COMMIT
           ↓
+Emit money_received via Socket.IO → recipient browser
+          ↓
 Return transaction ID
 ```
 
@@ -381,6 +389,64 @@ MongoDB's document-level locking ensures only one request can successfully debit
 | All `/api/*` | 100 requests | 15 minutes |
 
 Returns `429 Too Many Requests` with `{ "code": "RATE_LIMITED" }` when exceeded.
+
+---
+
+## Real-Time Notifications (Socket.IO)
+
+After a successful transfer commit, the recipient's browser receives an instant `money_received` event **without refreshing the page**.
+
+### How It Works
+
+```
+Sender hits POST /api/v1/transfers
+          ↓
+  MongoDB ACID commit
+          ↓
+  notificationService.emitMoneyReceived()
+          ↓
+  io.to("user:<receiverId>").emit("money_received", payload)
+          ↓
+  Recipient browser ← WebSocket event
+          ↓
+  ┌────────────────────┬──────────────────────┐
+  ▼                    ▼                      ▼
+Toast notification  Refetch balance   Refetch transactions
+```
+
+**Key principle**: Database is always the source of truth. Socket.IO only makes the already-correct DB state appear instantly in the recipient's UI. Transfers succeed even if the recipient is offline.
+
+### Event Payload (`money_received`)
+
+```json
+{
+  "type": "MONEY_RECEIVED",
+  "transactionId": "TXN1K8Z3F2B4A1",
+  "sender": {
+    "name": "Anant Jain",
+    "accountNumberMasked": "••••6060"
+  },
+  "amountPaise": 50000,
+  "currency": "INR",
+  "description": "Dinner split",
+  "receivedAt": "2024-01-15T18:30:00.000Z"
+}
+```
+
+### Security
+
+- Each authenticated user is placed in a **private room** `user:<userId>` on connect — server-assigned, client cannot join other rooms
+- Socket auth uses a **short-lived JWT (60s)** fetched via `GET /api/v1/auth/socket-token` and passed in the handshake `auth` object
+- Payload never contains: passwords, full account numbers, JWT tokens, or DB credentials
+- Offline recipients: transfer still commits atomically — correct state visible on next login
+
+### Deduplication
+
+The frontend `useMoneyReceived` hook tracks seen `transactionId`s in a `Set`. If the same event is delivered twice (reconnect scenario), `onReceived` is called only once.
+
+### Reconnection
+
+Socket.IO auto-reconnects with exponential backoff. The `SocketProvider` fetches a fresh auth token on each reconnect cycle, so long-lived sessions stay authenticated.
 
 ---
 

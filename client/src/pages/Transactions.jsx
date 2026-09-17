@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useTransactions } from '../hooks/useTransactions'
+import { useMoneyReceived } from '../hooks/useMoneyReceived'
+import { addMoneyToast } from '../components/MoneyToast'
 import { TransactionRow } from '../components/TransactionRow'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { ErrorBanner } from '../components/ErrorBanner'
@@ -9,6 +11,14 @@ export default function Transactions() {
   const [page, setPage] = useState(1)
   const LIMIT = 20
   const { transactions, pagination, loading, error, refetch } = useTransactions(page, LIMIT)
+
+  // Real-time: refetch transaction list when money is received
+  const handleMoneyReceived = useCallback((payload) => {
+    addMoneyToast(payload)
+    refetch()
+  }, [refetch])
+
+  useMoneyReceived(handleMoneyReceived)
 
   return (
     <div className="gradient-bg min-h-screen">

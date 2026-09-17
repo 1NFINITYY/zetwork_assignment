@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
+const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const generateTransactionId = require('../utils/generateTransactionId');
 const { rupeesToPaise } = require('../utils/moneyUtils');
+const { emitMoneyReceived } = require('./notificationService');
 
 /**
  * Transfer Service — The core banking logic.
@@ -171,6 +173,22 @@ const executeTransfer = async (
 
       transaction = createdTx;
     });
+
+    // ── Emit real-time notification AFTER commit (spec §13) ──────────────────
+    // DB is the source of truth. This is purely a UI notification.
+    // Failure here must never break the transfer response.
+    try {
+      const senderUser = await User.findById(senderUserId);
+      emitMoneyReceived({
+        receiverUserId: receiverAccount.userId,
+        senderName: senderUser ? senderUser.name : 'Someone',
+        senderAccountNumber: senderAccount.accountNumber,
+        transaction,
+      });
+    } catch (socketErr) {
+      // Non-critical — log and continue
+      console.error('⚠️  Socket notification failed (non-critical):', socketErr.message);
+    }
 
     return transaction;
   } catch (err) {

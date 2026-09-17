@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const authService = require('../services/authService');
 const env = require('../config/env');
 
@@ -5,10 +6,16 @@ const env = require('../config/env');
  * Cookie options — HTTP-only, Secure (in production), SameSite=Strict
  */
 const cookieOptions = {
-  httpOnly: true, // Not accessible via JavaScript
-  secure: env.NODE_ENV === 'production', // HTTPS only in production
-  sameSite: 'strict',
+  httpOnly: true,
+  secure: env.NODE_ENV === 'production',
+  sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+};
+
+const clearCookieOptions = {
+  httpOnly: true,
+  secure: env.NODE_ENV === 'production',
+  sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
 };
 
 /**
@@ -79,11 +86,7 @@ const login = async (req, res, next) => {
  * POST /api/v1/auth/logout
  */
 const logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict',
-  });
+  res.clearCookie('token', clearCookieOptions);
   res.json({ success: true, message: 'Logged out successfully' });
 };
 
@@ -103,4 +106,19 @@ const me = (req, res) => {
   });
 };
 
-module.exports = { register, login, logout, me };
+/**
+ * GET /api/v1/auth/socket-token
+ * Returns a short-lived (30s) JWT for Socket.IO handshake authentication.
+ * The Vite WS proxy does not forward cookies, so we use this REST endpoint
+ * to get a token and pass it in io({ auth: { token } }).
+ */
+const getSocketToken = (req, res) => {
+  const socketToken = jwt.sign(
+    { userId: req.user._id, email: req.user.email, type: 'socket' },
+    env.JWT_SECRET,
+    { expiresIn: '60s' }
+  );
+  res.json({ success: true, data: { token: socketToken } });
+};
+
+module.exports = { register, login, logout, me, getSocketToken };

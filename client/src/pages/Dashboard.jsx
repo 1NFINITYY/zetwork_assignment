@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { useAccount } from '../hooks/useAccount'
 import { useTransactions } from '../hooks/useTransactions'
+import { useMoneyReceived } from '../hooks/useMoneyReceived'
+import { addMoneyToast } from '../components/MoneyToast'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { TransactionRow, formatCurrency } from '../components/TransactionRow'
@@ -46,6 +48,15 @@ export default function Dashboard() {
   const { user } = useAuth()
   const { account, loading: accLoading, error: accError, refetch: refetchAccount } = useAccount()
   const { transactions, loading: txLoading, error: txError, refetch: refetchTx } = useTransactions(1, 5)
+
+  // Real-time: when this user receives money, show toast + refresh balance + transactions
+  const handleMoneyReceived = useCallback((payload) => {
+    addMoneyToast(payload)
+    refetchAccount()
+    refetchTx()
+  }, [refetchAccount, refetchTx])
+
+  useMoneyReceived(handleMoneyReceived)
 
   return (
     <div className="gradient-bg min-h-screen">

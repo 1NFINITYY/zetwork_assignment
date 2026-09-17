@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ServerStatusProvider } from './context/ServerStatusContext'
 import { useServerStatus } from './context/useServerStatus'
+import { SocketProvider } from './context/SocketContext'
 import { ServerWakingScreen } from './components/ServerWakingScreen'
+import { MoneyToastContainer } from './components/MoneyToast'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Navbar } from './components/Navbar'
 import Login from './pages/Login'
@@ -26,35 +28,32 @@ function DashboardLayout() {
   )
 }
 
-/**
- * Inner app — has access to ServerStatusContext.
- * Callback is already registered synchronously inside ServerStatusProvider,
- * so no useEffect needed here.
- */
 function AppInner() {
   const { status } = useServerStatus()
 
   return (
     <>
-      {/* Full-screen overlay when server is sleeping */}
       {status === 'WAKING' && <ServerWakingScreen />}
+
+      {/* Global money received toast — renders on top of everything */}
+      <MoneyToastContainer />
 
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          {/* SocketProvider inside AuthProvider so auth cookie is available for WS handshake */}
+          <SocketProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard/*" element={<DashboardLayout />} />
-            </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard/*" element={<DashboardLayout />} />
+              </Route>
 
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </SocketProvider>
         </AuthProvider>
       </BrowserRouter>
     </>
