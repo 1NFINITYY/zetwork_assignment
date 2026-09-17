@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import { useAccount } from '../hooks/useAccount'
 import { useTransactions } from '../hooks/useTransactions'
 import { LoadingSpinner } from '../components/LoadingSpinner'

@@ -10,6 +10,17 @@ ZetPay is a full-stack banking application that simulates money transfers betwee
 
 ---
 
+> [!NOTE]
+> **Render Free Tier — Cold Start**
+> The backend is hosted on Render's free tier, which **spins down after 15 minutes of inactivity**.
+> The first request after inactivity takes **30–60 seconds** while the server restarts.
+>
+> The app handles this automatically:
+> - 🔄 **Keep-alive ping** — frontend pings `/health` every 10 minutes to prevent spin-down during active use
+> - 🖥️ **Waking screen** — if the server is sleeping, a friendly overlay appears and auto-retries every 8 seconds until it's back online
+
+---
+
 ## Features
 
 | Feature | Status |

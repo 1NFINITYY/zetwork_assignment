@@ -1,13 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect } from 'react'
 import { authAPI } from '../services/api'
 
-const AuthContext = createContext(null)
+export const AuthContext = createContext(null)
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true) // true until we know auth status
+  const [loading, setLoading] = useState(true)
 
-  // On mount, check if user is already logged in
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -44,10 +43,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
-  return ctx
 }

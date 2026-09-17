@@ -7,17 +7,37 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+// Holds a reference to the ServerStatusContext's markServerWaking function.
+// Injected at app startup via setServerWakingCallback() so we don't create
+// a circular dependency between api.js and the React context.
+let _markServerWaking = null
+export function setServerWakingCallback(fn) {
+  _markServerWaking = fn
+}
+
 // ─── Response Interceptor ──────────────────────────────────────────────────
-// Automatically redirect to login on 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Don't redirect if already on auth pages
+    const status = error.response?.status
+
+    // Server is down/sleeping when:
+    //  - No response at all (pure network error / timeout)
+    //  - 502 Bad Gateway (Vite proxy couldn't reach backend)
+    //  - 503 Service Unavailable (Render cold start / overloaded)
+    //  - 504 Gateway Timeout
+    const isServerDown = !error.response || status === 502 || status === 503 || status === 504
+    if (isServerDown && _markServerWaking) {
+      _markServerWaking()
+    }
+
+    // 401 = session expired — redirect to login
+    if (status === 401) {
       if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
         window.location.href = '/login'
       }
     }
+
     return Promise.reject(error)
   }
 )
