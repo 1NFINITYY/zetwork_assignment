@@ -22,7 +22,9 @@ export default function SendMoney() {
     if (!form.receiverAccountNumber.trim()) errs.receiverAccountNumber = 'Recipient account number is required'
     const amt = parseFloat(form.amount)
     if (!form.amount || isNaN(amt) || amt <= 0) errs.amount = 'Enter a valid amount greater than ₹0'
-    if (account && amt > account.balancePaise / 100) errs.amount = 'Amount exceeds your available balance'
+    // Note: balance check is intentionally NOT done client-side.
+    // The server validates against real-time balance inside the ACID transaction.
+    // A client-side check would use stale cached data and produce false rejections.
     return errs
   }
 
