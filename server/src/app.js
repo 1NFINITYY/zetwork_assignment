@@ -24,19 +24,27 @@ app.use(helmet());
 
 // ─── CORS (spec section 17) ──────────────────────────────────────────────────
 // In production: frontend (Vercel) and backend (Render) are different domains.
-// Must explicitly allow the frontend origin with credentials.
-app.use(
-  cors({
-    origin: env.CLIENT_URL,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
-    exposedHeaders: ['Set-Cookie'],
-  })
-);
+// CLIENT_ORIGINS is a parsed list so multiple Vercel URLs are all allowed.
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+    if (env.CLIENT_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
+  exposedHeaders: ['Set-Cookie'],
+};
+
+app.use(cors(corsOptions));
 
 // Ensure preflight OPTIONS requests are handled
-app.options('*', cors({ origin: env.CLIENT_URL, credentials: true }));
+app.options('*', cors(corsOptions));
 
 // ─── Body Parsing ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' })); // Prevent large payloads
