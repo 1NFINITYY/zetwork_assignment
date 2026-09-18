@@ -82,8 +82,8 @@ export default function SendMoney() {
     return (
       <div className="gradient-bg min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md fade-in text-center">
-          <div className="glass-card p-10">
-            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)' }}>
+          <div className="glass-card p-6 sm:p-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)' }}>
               <CheckCircle2 className="w-9 h-9 text-emerald-400" />
             </div>
             <h2 className="text-2xl font-bold mb-2" style={{ color: '#34d399' }}>
@@ -126,8 +126,8 @@ export default function SendMoney() {
     return (
       <div className="gradient-bg min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md fade-in text-center">
-          <div className="glass-card p-10">
-            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+          <div className="glass-card p-6 sm:p-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
               <XCircle className="w-9 h-9 text-red-400" />
             </div>
             <h2 className="text-2xl font-bold mb-2" style={{ color: '#f87171' }}>
@@ -168,7 +168,7 @@ export default function SendMoney() {
           </div>
         )}
 
-        <div className="glass-card p-8">
+        <div className="glass-card p-5 sm:p-8">
           <h1 className="text-2xl font-bold mb-6 flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
               <Send className="w-5 h-5 text-blue-400" />

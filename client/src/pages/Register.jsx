@@ -52,7 +52,7 @@ export default function Register() {
         </div>
 
         {/* Card */}
-        <div className="glass-card p-8">
+        <div className="glass-card p-5 sm:p-8">
           {error && (
             <div
               className="rounded-xl p-3 mb-5 flex items-center gap-2 text-sm"

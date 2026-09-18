@@ -10,7 +10,7 @@ export const ConfirmModal = ({ isOpen, onClose, onConfirm, transferData, loading
       style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
     >
       <div
-        className="glass-card fade-in w-full max-w-md p-8"
+        className="glass-card fade-in w-full max-w-md p-5 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Icon */}

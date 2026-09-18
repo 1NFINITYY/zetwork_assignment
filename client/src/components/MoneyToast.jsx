@@ -41,12 +41,13 @@ function SingleToast({ toast, onClose }) {
         border: '1px solid rgba(16, 185, 129, 0.4)',
         borderRadius: '1rem',
         padding: '1rem 1.25rem',
-        width: '320px',
+        width: 'min(320px, calc(100vw - 2rem))',
         boxShadow: '0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.1)',
         transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         transform: visible && !leaving ? 'translateX(0) scale(1)' : 'translateX(120%) scale(0.95)',
         opacity: visible && !leaving ? 1 : 0,
         cursor: 'default',
+        position: 'relative',
       }}
     >
       {/* Header */}
@@ -166,13 +167,14 @@ export function MoneyToastContainer() {
     <div
       style={{
         position: 'fixed',
-        top: '1.5rem',
-        right: '1.5rem',
+        top: '1rem',
+        right: '1rem',
         zIndex: 99999,
         display: 'flex',
         flexDirection: 'column',
         gap: '0.75rem',
         pointerEvents: 'none',
+        maxWidth: 'calc(100vw - 2rem)',
       }}
     >
       {toasts.map((toast) => (

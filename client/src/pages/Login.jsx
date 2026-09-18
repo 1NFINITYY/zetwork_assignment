@@ -46,7 +46,7 @@ export default function Login() {
         </div>
 
         {/* Card */}
-        <div className="glass-card p-8">
+        <div className="glass-card p-5 sm:p-8">
           {/* Error state */}
           {error && (
             <div

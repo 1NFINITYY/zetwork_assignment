@@ -71,9 +71,9 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 fade-in">
 
         {/* Welcome Banner */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-xl sm:text-2xl font-bold">
               Welcome back, {user?.name?.split(' ')[0]}
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -82,7 +82,7 @@ export default function Dashboard() {
           </div>
           <Link
             to="/dashboard/send"
-            className="btn-primary text-sm flex items-center gap-2"
+            className="btn-primary text-sm flex items-center justify-center gap-2 self-start sm:self-auto"
             style={{ width: 'auto', padding: '0.625rem 1.25rem' }}
           >
             <Send className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default function Dashboard() {
 
         {/* Balance Card */}
         <div
-          className="balance-card rounded-2xl p-8 relative overflow-hidden"
+          className="balance-card rounded-2xl p-5 sm:p-8 relative overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #1a1f3a 50%, #2d1b4e 100%)' }}
         >
           {/* Decorative circles */}
@@ -110,11 +110,11 @@ export default function Dashboard() {
               Available Balance
             </p>
             {accLoading ? (
-              <div className="skeleton h-12 w-48 mb-4" />
+              <div className="skeleton h-10 w-40 sm:h-12 sm:w-48 mb-4" />
             ) : accError ? (
               <p className="text-red-400 text-lg font-bold mb-4">—</p>
             ) : (
-              <h2 className="text-4xl font-bold mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ letterSpacing: '-0.02em' }}>
                 {account ? formatCurrency(account.balancePaise) : '—'}
               </h2>
             )}
@@ -208,28 +208,61 @@ export default function Dashboard() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    {['ID', 'Type', 'Amount', 'Account', 'Status', 'Date', 'Description'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider"
-                        style={{ color: 'var(--text-muted)' }}
-                      >
-                        {h}
-                      </th>
+            <>
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      {['ID', 'Type', 'Amount', 'Account', 'Status', 'Date', 'Description'].map((h) => (
+                        <th
+                          key={h}
+                          className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <TransactionRow key={tx.transactionId} tx={tx} />
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <TransactionRow key={tx.transactionId} tx={tx} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="sm:hidden divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
+                {transactions.map((tx) => {
+                  const isSent = tx.type === 'SENT'
+                  return (
+                    <div key={tx.transactionId} className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`inline-flex items-center gap-1 font-semibold text-xs ${isSent ? 'badge-sent' : 'badge-received'}`}>
+                          {isSent ? '↑ SENT' : '↓ RECEIVED'}
+                        </span>
+                        <span className="font-bold text-sm" style={{ color: isSent ? '#f87171' : '#34d399' }}>
+                          {isSent ? '-' : '+'}{(tx.amountPaise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
+                        <span className="font-mono">{tx.otherAccount || '—'}</span>
+                        <span className={tx.status === 'SUCCESS' ? 'badge-success' : 'badge-failed'}>{tx.status}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
+                        <span className="font-mono truncate max-w-[45%]" title={tx.transactionId}>{tx.transactionId.slice(0, 12)}…</span>
+                        <span>{new Date(tx.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                      {tx.description && (
+                        <p className="text-xs truncate" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>{tx.description}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </>
           )}
         </div>
 

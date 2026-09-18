@@ -8,11 +8,11 @@ import { LogOut, CheckCircle2, ShieldCheck, UserCheck, Shield, KeyRound, CreditC
 
 const InfoRow = ({ label, value, mono = false }) => (
   <div
-    className="flex justify-between items-center py-3"
+    className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 gap-1"
     style={{ borderBottom: '1px solid var(--border-subtle)' }}
   >
     <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span>
-    <span className={`font-medium text-sm ${mono ? 'font-mono' : ''}`}>{value}</span>
+    <span className={`font-medium text-sm break-all sm:break-normal sm:text-right ${mono ? 'font-mono' : ''}`}>{value}</span>
   </div>
 )
 
@@ -38,16 +38,16 @@ export default function Profile() {
         </div>
 
         {/* Avatar + name */}
-        <div className="glass-card p-6 flex items-center gap-5">
+        <div className="glass-card p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 text-white shadow-lg"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-xl sm:text-2xl font-bold flex-shrink-0 text-white shadow-lg"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}
           >
             {user?.name?.charAt(0)?.toUpperCase()}
           </div>
           <div>
-            <h2 className="text-xl font-bold">{user?.name}</h2>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
+            <h2 className="text-lg sm:text-xl font-bold">{user?.name}</h2>
+            <p className="text-sm break-all" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
             <span className="badge-success mt-1.5 inline-flex items-center gap-1 text-xs">
               <CheckCircle2 className="w-3 h-3" />
               <span>Verified</span>

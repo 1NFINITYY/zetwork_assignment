@@ -71,28 +71,61 @@ export default function Transactions() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    {['Transaction ID', 'Type', 'Amount', 'Other Account', 'Status', 'Date & Time', 'Description'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider"
-                        style={{ color: 'var(--text-muted)' }}
-                      >
-                        {h}
-                      </th>
+            <>
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      {['Transaction ID', 'Type', 'Amount', 'Other Account', 'Status', 'Date & Time', 'Description'].map((h) => (
+                        <th
+                          key={h}
+                          className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <TransactionRow key={tx.transactionId} tx={tx} />
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <TransactionRow key={tx.transactionId} tx={tx} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="sm:hidden divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
+                {transactions.map((tx) => {
+                  const isSent = tx.type === 'SENT'
+                  return (
+                    <div key={tx.transactionId} className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`inline-flex items-center gap-1 font-semibold text-xs ${isSent ? 'badge-sent' : 'badge-received'}`}>
+                          {isSent ? '↑ SENT' : '↓ RECEIVED'}
+                        </span>
+                        <span className="font-bold text-sm" style={{ color: isSent ? '#f87171' : '#34d399' }}>
+                          {isSent ? '-' : '+'}{(tx.amountPaise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
+                        <span className="font-mono">{tx.otherAccount || '—'}</span>
+                        <span className={tx.status === 'SUCCESS' ? 'badge-success' : 'badge-failed'}>{tx.status}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
+                        <span className="font-mono truncate max-w-[45%]" title={tx.transactionId}>{tx.transactionId.slice(0, 12)}…</span>
+                        <span>{new Date(tx.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                      {tx.description && (
+                        <p className="text-xs truncate" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>{tx.description}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </>
           )}
 
           {/* Pagination */}
