@@ -247,9 +247,17 @@ Idempotency-Key: <unique-uuid-per-request>
 
 JWT is stored in a **HTTP-only** cookie (not accessible via JavaScript):
 
+**Development:**
 ```
-Set-Cookie: token=<jwt>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800
+Set-Cookie: token=<jwt>; HttpOnly; SameSite=Lax; Max-Age=604800
 ```
+
+**Production (cross-origin: Vercel ↔ Render):**
+```
+Set-Cookie: token=<jwt>; HttpOnly; Secure; SameSite=None; Max-Age=604800
+```
+
+`SameSite=None; Secure` is required when the frontend and backend are on different domains. `SameSite=Strict` or `Lax` would block the cookie on cross-origin requests.
 
 This prevents XSS attacks from stealing the token. The CORS configuration restricts which origins can include credentials.
 
@@ -518,6 +526,11 @@ JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5173
 ```
 
+```bash
+# client/.env (only needed in production / Vercel)
+VITE_API_URL=https://your-backend.onrender.com
+```
+
 ---
 
 ## Local Setup
@@ -529,8 +542,8 @@ CLIENT_URL=http://localhost:5173
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/<your-username>/banking-money-transfer-system.git
-cd banking-money-transfer-system
+git clone https://github.com/1NFINITYY/zetwork_assignment.git
+cd zetwork_assignment
 ```
 
 ### 2. Install dependencies
@@ -562,23 +575,27 @@ npm test
 ## Deployment
 
 ### Frontend → Vercel
-```bash
-cd client
-npm run build
-# Deploy dist/ to Vercel
-```
-Set environment variable in Vercel:
-- (None needed — API calls are proxied or use absolute HTTPS URL)
+1. Import repo at https://vercel.com → set **Root Directory** to `client`
+2. Add environment variable:
+   ```
+   VITE_API_URL=https://your-backend.onrender.com
+   ```
+3. Deploy — Vercel auto-builds on every push
 
-### Backend → Render / Railway
-Set environment variables:
-```
-MONGO_URI=<mongodb-atlas-uri>
-JWT_SECRET=<long-random-secret>
-CLIENT_URL=https://your-frontend.vercel.app
-NODE_ENV=production
-PORT=5000
-```
+### Backend → Render
+1. Create Web Service → set **Root Directory** to `server`
+2. Build command: `npm install` | Start command: `node src/server.js`
+3. Set environment variables:
+   ```
+   NODE_ENV=production
+   MONGO_URI=<mongodb-atlas-uri>
+   JWT_SECRET=<long-random-secret>
+   JWT_EXPIRES_IN=7d
+   CLIENT_URL=https://your-frontend.vercel.app
+   PORT=5000
+   ```
+
+> **Note:** Render runs behind a reverse proxy. `app.set('trust proxy', 1)` is already configured so rate limiting works correctly with real client IPs.
 
 ### Database → MongoDB Atlas
 1. Create a free cluster at https://mongodb.com/atlas
@@ -654,8 +671,8 @@ curl -X POST http://localhost:5000/api/v1/transfers \
 
 ## Live Demo
 
-> 🔗 **Frontend**: https://zetpay.vercel.app *(deploy to update this)*  
-> 🔗 **API Health**: https://zetpay-api.onrender.com/health *(deploy to update this)*
+> 🔗 **Frontend**: https://zetwork-assignment.vercel.app
+> 🔗 **API Health**: https://zetwork-assignment.onrender.com/health
 
 **Demo Accounts** (after deployment):
 ```
@@ -667,7 +684,7 @@ Email: bob@demo.com   / Password: password123
 
 ## GitHub Repository
 
-> https://github.com/<your-username>/banking-money-transfer-system
+> https://github.com/1NFINITYY/zetwork_assignment
 
 ---
 
