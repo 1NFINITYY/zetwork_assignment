@@ -3,19 +3,24 @@ const authService = require('../services/authService');
 const env = require('../config/env');
 
 /**
- * Cookie options — HTTP-only, Secure (in production), SameSite=Strict
+ * Cookie options
+ * Production (cross-origin): SameSite=None + Secure=true
+ *   Required when frontend (Vercel) and backend (Render) are on different domains.
+ *   SameSite=Strict/Lax blocks cookies cross-origin.
+ * Development (same-origin via Vite proxy): SameSite=Lax
  */
+const isProduction = env.NODE_ENV === 'production';
 const cookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
+  secure: isProduction,           // HTTPS only in production
+  sameSite: isProduction ? 'none' : 'lax',  // 'none' required for cross-origin in prod
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
 };
 
 const clearCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
 };
 
 /**

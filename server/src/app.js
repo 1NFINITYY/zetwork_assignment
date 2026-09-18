@@ -18,15 +18,20 @@ const app = express();
 app.use(helmet());
 
 // ─── CORS (spec section 17) ──────────────────────────────────────────────────
-// Only allow the specified frontend origin. No wildcard when credentials involved.
+// In production: frontend (Vercel) and backend (Render) are different domains.
+// Must explicitly allow the frontend origin with credentials.
 app.use(
   cors({
     origin: env.CLIENT_URL,
-    credentials: true, // Allow cookies
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
+    exposedHeaders: ['Set-Cookie'],
   })
 );
+
+// Ensure preflight OPTIONS requests are handled
+app.options('*', cors({ origin: env.CLIENT_URL, credentials: true }));
 
 // ─── Body Parsing ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' })); // Prevent large payloads
