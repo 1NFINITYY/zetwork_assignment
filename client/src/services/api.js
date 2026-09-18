@@ -1,8 +1,14 @@
 import axios from 'axios'
 
+// In dev: Vite proxy forwards /api/v1 → http://localhost:5000/api/v1
+// In prod: VITE_API_URL must be set to https://your-backend.onrender.com
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api/v1`
+  : '/api/v1'
+
 // Base axios instance
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: BASE_URL,
   withCredentials: true, // Send HTTP-only cookies with every request
   headers: { 'Content-Type': 'application/json' },
 })

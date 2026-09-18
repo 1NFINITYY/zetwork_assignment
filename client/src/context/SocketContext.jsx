@@ -4,14 +4,16 @@ import { authAPI } from '../services/api'
 
 export const SocketContext = createContext(null)
 
+// In dev: connects to window.location.origin (Vite proxies /socket.io → localhost:5000)
+// In prod: connects directly to the Render backend URL
+const SOCKET_URL = import.meta.env.VITE_API_URL || window.location.origin
+
 /**
  * SocketProvider
  *
  * Connects to Socket.IO server. Auth strategy:
- *  1. Cookie (sameSite: lax) — works in production and direct connections.
- *  2. handshake auth token — fallback for dev (Vite WS proxy strips cookies).
- *     Fetches a short-lived (60s) token via GET /api/v1/auth/socket-token
- *     and passes it in io({ auth: { token } }).
+ *  1. Fetches a short-lived (60s) token via GET /api/v1/auth/socket-token
+ *  2. Passes it in io({ auth: { token } }) — bypasses cookie issues in both dev and prod
  *
  * Uses useState (not useRef) so context consumers re-render when socket is ready.
  */
@@ -23,16 +25,16 @@ export function SocketProvider({ children }) {
     let s
 
     const connect = async () => {
-      // Fetch a short-lived socket token via REST (cookies work fine here)
+      // Fetch short-lived socket token via REST (cookie auth works fine here)
       let authToken = null
       try {
         const res = await authAPI.getSocketToken()
         authToken = res.data?.data?.token
       } catch {
-        // Not logged in yet, or server down — socket will fail gracefully
+        // Not logged in yet or server unreachable — socket will fail gracefully
       }
 
-      s = io(window.location.origin, {
+      s = io(SOCKET_URL, {
         withCredentials: true,
         auth: authToken ? { token: authToken } : undefined,
         reconnection: true,
