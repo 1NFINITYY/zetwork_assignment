@@ -14,6 +14,11 @@ const transactionRoutes = require('./routes/transactionRoutes');
 
 const app = express();
 
+// ─── Trust Proxy (required on Render / cloud platforms) ──────────────────────
+// Render sits behind a reverse proxy that sets X-Forwarded-For.
+// Without this, express-rate-limit cannot identify real client IPs.
+app.set('trust proxy', 1);
+
 // ─── Security Headers (spec section 17) ─────────────────────────────────────
 app.use(helmet());
 
