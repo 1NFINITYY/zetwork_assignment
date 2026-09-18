@@ -672,12 +672,12 @@ curl -X POST http://localhost:5000/api/v1/transfers \
 ## Live Demo
 
 > 🔗 **Frontend**: https://zetwork-assignment.vercel.app
-> 🔗 **API Health**: https://zetwork-assignment.onrender.com/health
+> 🔗 **API Health**: https://zetwork-assignment-rea1.onrender.com/health
 
 **Demo Accounts** (after deployment):
 ```
-Email: alice@demo.com / Password: password123
-Email: bob@demo.com   / Password: password123
+Email: testuser1@gmail.com / Password: testuser
+Email: anant606060@gmail.com   / Password: anant123
 ```
 
 ---
