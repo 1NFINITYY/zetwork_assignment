@@ -8,6 +8,8 @@
 
 ZetPay is a full-stack banking application that simulates money transfers between accounts. It demonstrates production-quality engineering: **ACID database transactions**, **concurrency-safe transfers**, **idempotent API design**, **JWT authentication**, **comprehensive input validation**, and **real-time Socket.IO notifications**.
 
+![Dashboard](docs/screenshots/03_dashboard.png)
+
 ---
 
 > [!NOTE]
@@ -240,6 +242,26 @@ Idempotency-Key: <unique-uuid-per-request>
 | `INSUFFICIENT_BALANCE` | 422 | Balance < transfer amount |
 | `RATE_LIMITED` | 429 | Too many requests |
 | `INTERNAL_ERROR` | 500 | Unexpected server error |
+
+---
+
+## Screenshots
+
+### Login & Register
+![Login](docs/screenshots/01_login.png)
+![Register](docs/screenshots/02_register.png)
+
+### Send Money
+![Send Money](docs/screenshots/04_send_money.png)
+![Confirm Transfer](docs/screenshots/05_confirm_transfer.png)
+
+### Real-Time Notification (Socket.IO)
+> Left: sender sees "Transfer Successful" — Right: recipient gets instant push notification and balance updates without refresh
+
+![Real-time Notification](docs/screenshots/06_realtime_notification.png)
+
+### Transaction History
+![Transaction History](docs/screenshots/07_transactions.png)
 
 ---
 
