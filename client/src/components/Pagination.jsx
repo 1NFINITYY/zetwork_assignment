@@ -1,3 +1,5 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
 export const Pagination = ({ pagination, onPageChange }) => {
   if (!pagination || pagination.totalPages <= 1) return null
 
@@ -24,9 +26,10 @@ export const Pagination = ({ pagination, onPageChange }) => {
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={!hasPrevPage}
-          className="btn-ghost text-sm px-3 py-1.5 disabled:opacity-30"
+          className="btn-ghost text-sm px-2.5 py-1.5 disabled:opacity-30 flex items-center gap-1"
         >
-          ← Prev
+          <ChevronLeft className="w-4 h-4" />
+          <span>Prev</span>
         </button>
 
         {deduped.map((p, idx) =>
@@ -49,9 +52,10 @@ export const Pagination = ({ pagination, onPageChange }) => {
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={!hasNextPage}
-          className="btn-ghost text-sm px-3 py-1.5 disabled:opacity-30"
+          className="btn-ghost text-sm px-2.5 py-1.5 disabled:opacity-30 flex items-center gap-1"
         >
-          Next →
+          <span>Next</span>
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     </div>

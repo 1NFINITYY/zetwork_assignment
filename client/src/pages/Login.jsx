@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import { ArrowRightLeft, AlertCircle, LogIn } from 'lucide-react'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -33,10 +34,10 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-8">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto mb-4"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto mb-4 shadow-lg"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}
           >
-            Z
+            <ArrowRightLeft className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
           <p style={{ color: 'var(--text-muted)' }} className="text-sm">
@@ -52,7 +53,8 @@ export default function Login() {
               className="rounded-xl p-3 mb-5 flex items-center gap-2 text-sm"
               style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}
             >
-              <span>⚠</span> {error}
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -89,14 +91,17 @@ export default function Login() {
               />
             </div>
 
-            <button id="login-submit" type="submit" className="btn-primary" disabled={loading}>
+            <button id="login-submit" type="submit" className="btn-primary flex items-center justify-center gap-2 cursor-pointer" disabled={loading}>
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-transparent" style={{ borderTopColor: 'white' }} />
                   Signing in…
                 </span>
               ) : (
-                'Sign In'
+                <>
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In</span>
+                </>
               )}
             </button>
           </form>

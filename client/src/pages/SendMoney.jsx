@@ -4,6 +4,7 @@ import { transferAPI } from '../services/api'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAccount } from '../hooks/useAccount'
 import { formatCurrency } from '../components/TransactionRow'
+import { CheckCircle2, XCircle, Send, ShieldCheck, ArrowRight, RotateCcw } from 'lucide-react'
 
 // We generate a UUID-based idempotency key per submit attempt
 // so duplicate network retries don't double-charge
@@ -82,7 +83,9 @@ export default function SendMoney() {
       <div className="gradient-bg min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md fade-in text-center">
           <div className="glass-card p-10">
-            <div className="text-6xl mb-4">✅</div>
+            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)' }}>
+              <CheckCircle2 className="w-9 h-9 text-emerald-400" />
+            </div>
             <h2 className="text-2xl font-bold mb-2" style={{ color: '#34d399' }}>
               Transfer Successful!
             </h2>
@@ -107,8 +110,9 @@ export default function SendMoney() {
             </div>
 
             <div className="flex gap-3">
-              <button onClick={handleNewTransfer} className="btn-primary" style={{ width: 'auto', flex: 1 }}>
-                New Transfer
+              <button onClick={handleNewTransfer} className="btn-primary flex items-center justify-center gap-2" style={{ width: 'auto', flex: 1 }}>
+                <Send className="w-4 h-4" />
+                <span>New Transfer</span>
               </button>
             </div>
           </div>
@@ -123,7 +127,9 @@ export default function SendMoney() {
       <div className="gradient-bg min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md fade-in text-center">
           <div className="glass-card p-10">
-            <div className="text-6xl mb-4">❌</div>
+            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+              <XCircle className="w-9 h-9 text-red-400" />
+            </div>
             <h2 className="text-2xl font-bold mb-2" style={{ color: '#f87171' }}>
               Transfer Failed
             </h2>
@@ -135,8 +141,9 @@ export default function SendMoney() {
                 Error: {result.code}
               </p>
             )}
-            <button onClick={handleNewTransfer} className="btn-primary">
-              Try Again
+            <button onClick={handleNewTransfer} className="btn-primary flex items-center justify-center gap-2">
+              <RotateCcw className="w-4 h-4" />
+              <span>Try Again</span>
             </button>
           </div>
         </div>
@@ -162,8 +169,11 @@ export default function SendMoney() {
         )}
 
         <div className="glass-card p-8">
-          <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span>💸</span> Send Money
+          <h1 className="text-2xl font-bold mb-6 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
+              <Send className="w-5 h-5 text-blue-400" />
+            </div>
+            <span>Send Money</span>
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -237,18 +247,19 @@ export default function SendMoney() {
               />
             </div>
 
-            <button id="transfer-submit" type="submit" className="btn-primary mt-2">
-              Review Transfer →
+            <button id="transfer-submit" type="submit" className="btn-primary mt-2 flex items-center justify-center gap-2">
+              <span>Review Transfer</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
         </div>
 
         {/* Info box */}
         <div
-          className="rounded-xl p-4 mt-4 text-sm flex gap-3"
+          className="rounded-xl p-4 mt-4 text-sm flex gap-3 items-start"
           style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.12)' }}
         >
-          <span>🔒</span>
+          <ShieldCheck className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
           <p style={{ color: 'var(--text-muted)' }}>
             All transfers are instant and ACID-protected. You'll see a confirmation before the money moves.
           </p>

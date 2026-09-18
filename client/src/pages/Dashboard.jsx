@@ -8,6 +8,7 @@ import { addMoneyToast } from '../components/MoneyToast'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { TransactionRow, formatCurrency } from '../components/TransactionRow'
+import { Copy, Check, Send, History, User, Inbox, ArrowRight, ArrowUpRight } from 'lucide-react'
 
 // Copy account number card — replaces the old dummy "Secure" button
 function CopyAccountCard({ accountNumber }) {
@@ -32,10 +33,17 @@ function CopyAccountCard({ accountNumber }) {
       title={accountNumber ? `Copy: ${accountNumber}` : 'Loading...'}
     >
       <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
-        style={{ background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)', border: `1px solid ${copied ? 'rgba(16,185,129,0.4)' : 'rgba(245,158,11,0.4)'}`, transition: 'all 0.2s' }}
+        className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200"
+        style={{
+          background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
+          border: `1px solid ${copied ? 'rgba(16,185,129,0.4)' : 'rgba(245,158,11,0.4)'}`,
+        }}
       >
-        {copied ? '✅' : '📋'}
+        {copied ? (
+          <Check className="w-5 h-5 text-emerald-400" />
+        ) : (
+          <Copy className="w-5 h-5 text-amber-400" />
+        )}
       </div>
       <span className="text-sm font-medium" style={{ color: copied ? '#34d399' : 'inherit', transition: 'color 0.2s' }}>
         {copied ? 'Copied!' : 'Copy Acc. No.'}
@@ -66,7 +74,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">
-              Welcome back, {user?.name?.split(' ')[0]} 👋
+              Welcome back, {user?.name?.split(' ')[0]}
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
               Here&apos;s your financial overview
@@ -74,10 +82,11 @@ export default function Dashboard() {
           </div>
           <Link
             to="/dashboard/send"
-            className="btn-primary text-sm"
+            className="btn-primary text-sm flex items-center gap-2"
             style={{ width: 'auto', padding: '0.625rem 1.25rem' }}
           >
-            💸 Send Money
+            <Send className="w-4 h-4" />
+            <span>Send Money</span>
           </Link>
         </div>
 
@@ -140,10 +149,10 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { icon: '💸', label: 'Send Money', to: '/dashboard/send', color: '#3b82f6' },
-            { icon: '📋', label: 'History', to: '/dashboard/transactions', color: '#8b5cf6' },
-            { icon: '👤', label: 'Profile', to: '/dashboard/profile', color: '#10b981' },
-          ].map(({ icon, label, to, color }) => (
+            { icon: Send, label: 'Send Money', to: '/dashboard/send', color: '#3b82f6' },
+            { icon: History, label: 'History', to: '/dashboard/transactions', color: '#8b5cf6' },
+            { icon: User, label: 'Profile', to: '/dashboard/profile', color: '#10b981' },
+          ].map(({ icon: Icon, label, to, color }) => (
             <Link
               key={label}
               to={to}
@@ -156,7 +165,7 @@ export default function Dashboard() {
                 className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
                 style={{ background: `${color}20`, border: `1px solid ${color}40` }}
               >
-                {icon}
+                <Icon className="w-5 h-5" style={{ color }} />
               </div>
               <span className="text-sm font-medium">{label}</span>
             </Link>
@@ -172,10 +181,11 @@ export default function Dashboard() {
             <h2 className="text-lg font-bold">Recent Transactions</h2>
             <Link
               to="/dashboard/transactions"
-              className="text-sm font-medium"
+              className="text-sm font-medium flex items-center gap-1"
               style={{ color: '#60a5fa' }}
             >
-              View all →
+              <span>View all</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
@@ -189,7 +199,9 @@ export default function Dashboard() {
             </div>
           ) : transactions.length === 0 ? (
             <div className="text-center py-16">
-              <div className="text-4xl mb-3">📭</div>
+              <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                <Inbox className="w-7 h-7 text-blue-400" />
+              </div>
               <p className="font-medium mb-1">No transactions yet</p>
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Send your first transfer to get started

@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { Server } from 'lucide-react'
 
 export function ServerWakingScreen() {
   const [seconds, setSeconds] = useState(0)
@@ -52,11 +53,10 @@ export function ServerWakingScreen() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '2.2rem',
           animation: 'pulse 2s ease-in-out infinite',
         }}
       >
-        🖥️
+        <Server className="w-8 h-8 text-blue-400" />
       </div>
 
       <div>

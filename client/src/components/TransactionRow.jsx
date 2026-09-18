@@ -1,3 +1,5 @@
+import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+
 /**
  * Format paise to Indian Rupee display string.
  * @param {number} paise
@@ -35,8 +37,18 @@ export const TransactionRow = ({ tx }) => {
 
       {/* Type badge */}
       <td className="py-4 px-4">
-        <span className={isSent ? 'badge-sent' : 'badge-received'}>
-          {isSent ? '↑ SENT' : '↓ RECEIVED'}
+        <span className={`${isSent ? 'badge-sent' : 'badge-received'} inline-flex items-center gap-1 font-medium`}>
+          {isSent ? (
+            <>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>SENT</span>
+            </>
+          ) : (
+            <>
+              <ArrowDownLeft className="w-3.5 h-3.5" />
+              <span>RECEIVED</span>
+            </>
+          )}
         </span>
       </td>
 

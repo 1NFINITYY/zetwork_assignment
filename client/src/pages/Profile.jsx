@@ -4,6 +4,7 @@ import { useAccount } from '../hooks/useAccount'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { formatCurrency } from '../components/TransactionRow'
+import { LogOut, CheckCircle2, ShieldCheck, UserCheck, Shield, KeyRound, CreditCard } from 'lucide-react'
 
 const InfoRow = ({ label, value, mono = false }) => (
   <div
@@ -39,7 +40,7 @@ export default function Profile() {
         {/* Avatar + name */}
         <div className="glass-card p-6 flex items-center gap-5">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 text-white shadow-lg"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}
           >
             {user?.name?.charAt(0)?.toUpperCase()}
@@ -47,14 +48,18 @@ export default function Profile() {
           <div>
             <h2 className="text-xl font-bold">{user?.name}</h2>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
-            <span className="badge-success mt-1 inline-block">Verified</span>
+            <span className="badge-success mt-1.5 inline-flex items-center gap-1 text-xs">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>Verified</span>
+            </span>
           </div>
         </div>
 
         {/* User info */}
         <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>
-            Personal Information
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+            <UserCheck className="w-4 h-4 text-blue-400" />
+            <span>Personal Information</span>
           </h3>
           <InfoRow label="Full Name" value={user?.name || '—'} />
           <InfoRow label="Email Address" value={user?.email || '—'} />
@@ -63,8 +68,9 @@ export default function Profile() {
 
         {/* Account info */}
         <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>
-            Bank Account
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+            <CreditCard className="w-4 h-4 text-emerald-400" />
+            <span>Bank Account</span>
           </h3>
           {loading ? (
             <div className="py-4 flex justify-center">
@@ -95,8 +101,9 @@ export default function Profile() {
 
         {/* Security info */}
         <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>
-            Security
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+            <Shield className="w-4 h-4 text-indigo-400" />
+            <span>Security</span>
           </h3>
           <InfoRow label="Password" value="••••••••" />
           <InfoRow label="2FA" value="Not configured" />
@@ -107,9 +114,10 @@ export default function Profile() {
         <button
           id="profile-logout"
           onClick={handleLogout}
-          className="btn-danger w-full py-3 rounded-xl font-semibold text-sm"
+          className="btn-danger w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
         >
-          Sign Out
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
         </button>
 
         <p className="text-center text-xs pb-4" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>

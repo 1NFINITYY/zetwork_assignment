@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Coins, X } from 'lucide-react'
 
 /**
  * MoneyToast
@@ -51,7 +52,9 @@ function SingleToast({ toast, onClose }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1.2rem' }}>💰</span>
+          <div style={{ padding: '4px', borderRadius: '8px', background: 'rgba(16,185,129,0.15)' }}>
+            <Coins style={{ width: '1.1rem', height: '1.1rem', color: '#34d399' }} />
+          </div>
           <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#34d399' }}>
             Money Received
           </span>
@@ -63,12 +66,14 @@ function SingleToast({ toast, onClose }) {
             border: 'none',
             color: 'var(--text-muted)',
             cursor: 'pointer',
-            fontSize: '1rem',
-            lineHeight: 1,
-            padding: '2px 4px',
+            padding: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
+          aria-label="Close"
         >
-          ×
+          <X style={{ width: '1rem', height: '1rem' }} />
         </button>
       </div>
 

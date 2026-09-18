@@ -6,6 +6,7 @@ import { TransactionRow } from '../components/TransactionRow'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { Pagination } from '../components/Pagination'
+import { Inbox } from 'lucide-react'
 
 export default function Transactions() {
   const [page, setPage] = useState(1)
@@ -61,7 +62,9 @@ export default function Transactions() {
             </div>
           ) : transactions.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-5xl mb-4">📭</div>
+              <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                <Inbox className="w-8 h-8 text-blue-400" />
+              </div>
               <h3 className="text-lg font-semibold mb-2">No transactions yet</h3>
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Your transaction history will appear here after your first transfer.

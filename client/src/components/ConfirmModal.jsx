@@ -1,4 +1,5 @@
 import { formatCurrency } from './TransactionRow'
+import { Send } from 'lucide-react'
 
 export const ConfirmModal = ({ isOpen, onClose, onConfirm, transferData, loading }) => {
   if (!isOpen) return null
@@ -15,10 +16,10 @@ export const ConfirmModal = ({ isOpen, onClose, onConfirm, transferData, loading
         {/* Icon */}
         <div className="flex justify-center mb-6">
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+            className="w-16 h-16 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
           >
-            💸
+            <Send className="w-7 h-7 text-blue-400" />
           </div>
         </div>
 
