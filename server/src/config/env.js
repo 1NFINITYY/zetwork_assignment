@@ -7,6 +7,9 @@ const env = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  // The deployed Render URL — used by the self-ping keep-alive to prevent
+  // the free-tier service from sleeping after 15 minutes of inactivity.
+  RENDER_EXTERNAL_URL: process.env.RENDER_EXTERNAL_URL || null,
 };
 
 // Validate required env vars at startup
