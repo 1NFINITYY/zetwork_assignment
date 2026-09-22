@@ -6,6 +6,7 @@ import { SocketProvider } from './context/SocketContext'
 import { ServerWakingScreen } from './components/ServerWakingScreen'
 import { MoneyToastContainer } from './components/MoneyToast'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { PublicRoute } from './components/PublicRoute'
 import { Navbar } from './components/Navbar'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -43,8 +44,11 @@ function AppInner() {
           {/* SocketProvider inside AuthProvider so auth cookie is available for WS handshake */}
           <SocketProvider>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              {/* PublicRoute: redirects logged-in users to /dashboard */}
+              <Route element={<PublicRoute />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Route>
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard/*" element={<DashboardLayout />} />
