@@ -5,28 +5,27 @@ const connectDB = require('./config/db')
 const env = require('./config/env')
 const { initSocket } = require('./sockets/socket')
 
-// ─── Self-Ping Keep-Alive (Render free tier) ──────────────────────────────────
-// Render spins down free services after ~15 min of inactivity.
-// This pings our own /health endpoint every 9 minutes to keep the server warm.
-const startKeepAlive = () => {
-  const renderUrl = env.RENDER_EXTERNAL_URL
-  if (!renderUrl) {
-    console.log('⚠️  RENDER_EXTERNAL_URL not set — self-ping keep-alive disabled.')
-    return
-  }
-
-  const healthUrl = `${renderUrl}/health`
-  const INTERVAL_MS = 9 * 60 * 1000 // 9 minutes (safely under Render's 15-min limit)
+// ─── Self-Ping Keep-Alive ─────────────────────────────────────────────────────
+// Keeps the server warm by pinging /health every 9 minutes.
+// - On Render (production): uses RENDER_EXTERNAL_URL (set by Render automatically)
+// - On localhost (dev):     falls back to http://localhost:{PORT}
+// This prevents Render's free tier from spinning down after 15 min of inactivity.
+const startKeepAlive = (PORT) => {
+  const baseUrl = env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`
+  const healthUrl = `${baseUrl}/health`
+  const INTERVAL_MS = 9 * 60 * 1000 // 9 minutes
 
   const ping = () => {
     const client = healthUrl.startsWith('https') ? https : http
-    const req = client.get(healthUrl, (res) => {
+    // NOTE: http.get() already calls req.end() internally — do NOT call it again.
+    // res.resume() drains the response body so the socket is released back to
+    // the connection pool after every ping (prevents socket exhaustion).
+    client.get(healthUrl, (res) => {
+      res.resume()
       console.log(`✅ Keep-alive ping → ${healthUrl} [${res.statusCode}]`)
-    })
-    req.on('error', (err) => {
+    }).on('error', (err) => {
       console.error(`❌ Keep-alive ping failed: ${err.message}`)
     })
-    req.end()
   }
 
   // Fire once shortly after startup, then on a fixed interval
@@ -53,10 +52,8 @@ const startServer = async () => {
     console.log(`   API:    http://localhost:${PORT}/api/v1`)
     console.log(`   WS:     ws://localhost:${PORT}/socket.io`)
 
-    // Start keep-alive only after the server is actually ready
-    if (env.NODE_ENV === 'production') {
-      startKeepAlive()
-    }
+    // Start keep-alive after server is ready (runs in both dev and production)
+    startKeepAlive(PORT)
   })
 }
 
